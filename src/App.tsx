@@ -1,17 +1,18 @@
 import { FC, FormEvent, useState } from 'react';
 
-const initialItems = [
-  { id: 1, description: 'Passports', quantity: 2, packed: false },
-  { id: 2, description: 'Socks', quantity: 12, packed: true },
-  { id: 3, description: 'Charger', quantity: 2, packed: false },
-];
-
 export default function App() {
+  const [items, setItems] = useState([]);
+
+  const onAddNewItem = (newItem: { id: number; description: string; quantity: number; packed: boolean }) => {
+    //@ts-ignore
+    setItems((items) => [...items, newItem]);
+  };
+
   return (
     <div className='app'>
       <Logo />
-      <Form />
-      <PackingList />
+      <Form onAddItem={onAddNewItem} />
+      <PackingList items={items} />
       <Stats />
     </div>
   );
@@ -21,7 +22,11 @@ function Logo() {
   return <h1>🚢 Far Away ✈️</h1>;
 }
 
-function Form() {
+interface FormProps {
+  onAddItem: (newItem: { id: number; description: string; quantity: number; packed: boolean }) => void;
+}
+
+const Form: FC<FormProps> = ({ onAddItem }) => {
   const [description, setDescription] = useState('');
   const [quantity, setQuantity] = useState(1);
 
@@ -30,7 +35,8 @@ function Form() {
 
     if (!description) return;
 
-    const newItem = { id: new Date(), description: description, quantity: quantity, packed: false };
+    const newItem = { id: Math.floor(Math.random() * 100 + 1), description: description, quantity: quantity, packed: false };
+    onAddItem(newItem);
 
     setDescription('');
     setQuantity(1);
@@ -50,19 +56,23 @@ function Form() {
       <button>Add</button>
     </form>
   );
+};
+
+interface PackingListProps {
+  items: { id: number; description: string; quantity: number; packed: boolean }[];
 }
 
-function PackingList() {
+const PackingList: FC<PackingListProps> = ({ items }) => {
   return (
     <div className='list'>
       <ul>
-        {initialItems.map((item) => (
+        {items.map((item) => (
           <Item key={item.description} item={item} />
         ))}
       </ul>
     </div>
   );
-}
+};
 
 interface ItemProps {
   item: {
