@@ -7,11 +7,15 @@ export default function App() {
     setItems((items) => [...items, newItem]);
   };
 
+  const onDeleteItem = (id: number) => {
+    setItems((items) => items.filter((item) => item.id !== id));
+  };
+
   return (
     <div className='app'>
       <Logo />
       <Form onAddItem={onAddNewItem} />
-      <PackingList items={items} />
+      <PackingList items={items} onDeleteItem={onDeleteItem} />
       <Stats />
     </div>
   );
@@ -59,14 +63,15 @@ const Form: FC<FormProps> = ({ onAddItem }) => {
 
 interface PackingListProps {
   items: { id: number; description: string; quantity: number; packed: boolean }[];
+  onDeleteItem: (id: number) => void;
 }
 
-const PackingList: FC<PackingListProps> = ({ items }) => {
+const PackingList: FC<PackingListProps> = ({ items, onDeleteItem }) => {
   return (
     <div className='list'>
       <ul>
         {items.map((item) => (
-          <Item key={item.description} item={item} />
+          <Item key={item.description} item={item} onDeleteItem={onDeleteItem} />
         ))}
       </ul>
     </div>
@@ -80,15 +85,17 @@ interface ItemProps {
     quantity: number;
     packed: boolean;
   };
+  onDeleteItem: (id: number) => void;
 }
 
-const Item: FC<ItemProps> = ({ item }) => {
+const Item: FC<ItemProps> = ({ item, onDeleteItem }) => {
   return (
     <li>
+      {/* <input type='checkbox' value={item.packed} onChange={() => {}} /> */}
       <span style={item.packed ? { textDecoration: 'line-through' } : {}}>
         {item.quantity} {item.description}
       </span>
-      <button>❌</button>
+      <button onClick={() => onDeleteItem(item.id)}>❌</button>
     </li>
   );
 };
