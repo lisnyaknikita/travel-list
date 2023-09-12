@@ -1,10 +1,9 @@
 import { FC, FormEvent, useState } from 'react';
 
 export default function App() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<{ id: number; description: string; quantity: number; packed: boolean }[]>([]);
 
   const onAddNewItem = (newItem: { id: number; description: string; quantity: number; packed: boolean }) => {
-    //@ts-ignore
     setItems((items) => [...items, newItem]);
   };
 
