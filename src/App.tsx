@@ -11,11 +11,22 @@ export default function App() {
     setItems((items) => items.filter((item) => item.id !== id));
   };
 
+  const onToggleItem = (id: number) => {
+    setItems((items) =>
+      items.map((item) => {
+        if (item.id === id) {
+          return { ...item, packed: !item.packed };
+        }
+        return item;
+      })
+    );
+  };
+
   return (
     <div className='app'>
       <Logo />
       <Form onAddItem={onAddNewItem} />
-      <PackingList items={items} onDeleteItem={onDeleteItem} />
+      <PackingList items={items} onDeleteItem={onDeleteItem} onToggleItem={onToggleItem} />
       <Stats />
     </div>
   );
@@ -64,14 +75,15 @@ const Form: FC<FormProps> = ({ onAddItem }) => {
 interface PackingListProps {
   items: { id: number; description: string; quantity: number; packed: boolean }[];
   onDeleteItem: (id: number) => void;
+  onToggleItem: (id: number) => void;
 }
 
-const PackingList: FC<PackingListProps> = ({ items, onDeleteItem }) => {
+const PackingList: FC<PackingListProps> = ({ items, onDeleteItem, onToggleItem }) => {
   return (
     <div className='list'>
       <ul>
         {items.map((item) => (
-          <Item key={item.description} item={item} onDeleteItem={onDeleteItem} />
+          <Item key={item.description} item={item} onDeleteItem={onDeleteItem} onToggleItem={onToggleItem} />
         ))}
       </ul>
     </div>
@@ -86,12 +98,13 @@ interface ItemProps {
     packed: boolean;
   };
   onDeleteItem: (id: number) => void;
+  onToggleItem: (id: number) => void;
 }
 
-const Item: FC<ItemProps> = ({ item, onDeleteItem }) => {
+const Item: FC<ItemProps> = ({ item, onDeleteItem, onToggleItem }) => {
   return (
     <li>
-      {/* <input type='checkbox' value={item.packed} onChange={() => {}} /> */}
+      <input type='checkbox' checked={item.packed} onChange={() => onToggleItem(item.id)} />
       <span style={item.packed ? { textDecoration: 'line-through' } : {}}>
         {item.quantity} {item.description}
       </span>
